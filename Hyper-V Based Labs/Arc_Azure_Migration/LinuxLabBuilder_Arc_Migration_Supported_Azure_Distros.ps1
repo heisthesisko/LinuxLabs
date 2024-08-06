@@ -33,18 +33,33 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Exit 1
 }
 
-$Comment = "Is Hyper-V installed and running?"
-Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+# Define the Hyper-V feature name
+$featureName = "Microsoft-Hyper-V-All"
 
-# Check if Hyper-V is installed and running
-$hypervFeature = Get-WindowsFeature -Name Hyper-V
+# Function to check if Hyper-V is installed
+function Check-HyperV {
+    $feature = Get-WindowsOptionalFeature -Online -FeatureName $featureName
+    return $feature.State -eq "Enabled"
+}
 
-if ($hypervFeature.Installed -eq $false) {
-    Write-Host "Hyper-V is not installed. Installing Hyper-V..."
-    Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart
-} elseif ($hypervFeature.State -ne 'Running') {
-    Write-Host "Hyper-V is installed but not running. Starting Hyper-V..."
-    Start-Service -Name vmms
+# Function to install Hyper-V
+function Install-HyperV {
+    Enable-WindowsOptionalFeature -Online -FeatureName $featureName -All -NoRestart
+    Write-Host "Hyper-V has been installed. Please restart your computer to complete the installation."
+    $Comment= "Hyper-V has been installed. Restart will be needed"
+    Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+}
+
+# Check if Hyper-V is installed
+if (Check-HyperV) {
+    Write-Host "Hyper-V is already installed."
+    $Comment= "Hyper-V is already installed"
+    Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+} else {
+    Write-Host "Hyper-V is not installed. Installing now..."
+    $Comment= "Hyper-V is not installed. Installing now"
+    Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+    Install-HyperV
 }
 
 # Verify the existence of the LinuxLab folder and the LinuxLabBuilder.txt file
