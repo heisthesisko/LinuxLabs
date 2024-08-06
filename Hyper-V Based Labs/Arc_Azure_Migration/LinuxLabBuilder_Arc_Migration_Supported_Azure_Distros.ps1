@@ -33,7 +33,7 @@ if (-Not (Test-Path $folderPath)) {
 
 if (-Not (Test-Path $logFilePath)) {
     Write-Host "LinuxLabBuilder.txt file does not exist. Creating the file..."
-    New-Item -Path $filePath -ItemType File
+    New-Item -Path $logFilePath -ItemType File
 }
 
 if (-Not (Test-Path $VHDPath)) {    # Check if the VMFiles folder exists
