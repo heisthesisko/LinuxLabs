@@ -1,3 +1,8 @@
+# Check if the script is running with elevated privileges
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Please run this script as an administrator."
+    Exit 1
+}
 
 # Define variables
 $folderPath = "C:\\LinuxLab"
@@ -44,12 +49,6 @@ if (-Not (Test-Path $VHDPath)) {    # Check if the VMFiles folder exists
 # Example usage
 $Comment = "Script started"
 Write-Log -EventTimeStamp $logFilePath -Comment $Comment
-
-# Check if the script is running with elevated privileges
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "Please run this script as an administrator."
-    Exit 1
-}
 
 # Define the Hyper-V feature name
 $featureName = "Microsoft-Hyper-V-All"
