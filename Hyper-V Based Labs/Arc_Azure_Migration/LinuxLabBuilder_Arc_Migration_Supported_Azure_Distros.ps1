@@ -103,6 +103,7 @@ function Start-BITSJob {
 
     Write-Output "Starting BITS job: $jobName"
     Start-BitsTransfer -Source $sourceUrl -Destination $destinationPath -DisplayName $jobName -Asynchronous
+   
 }
 
 # Function to create a virtual machine
@@ -146,12 +147,17 @@ foreach ($bitsJob in $bitsJobs) {
     $destinationPath = $bitsJob.DestinationPath
     $isoFileName = [System.IO.Path]::GetFileName($destinationPath)
     $vmName = "LinuxLabVM-" + [System.IO.Path]::GetFileNameWithoutExtension($isoFileName)
+    $retryCount = 0
+    $maxRetries = 3
+    $isoExists = $false
 
-    do {
+    while (-not $isoExists -and $retryCount -lt $maxRetries) {
         # Start the BITS job
         Start-BITSJob -jobName $jobName -sourceUrl $sourceUrl -destinationPath $destinationPath
-        $Comment = "Staring $sourceUrl download"
+        $Comment = "Starting $sourceUrl download"
         Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+
+                
         # Wait for the BITS job to complete
         $job = Get-BitsTransfer -Name $jobName
         while ($job.JobState -ne 'Transferred' -and $job.JobState -ne 'Suspended' -and $job.JobState -ne 'Error') {
@@ -163,7 +169,7 @@ foreach ($bitsJob in $bitsJobs) {
             Complete-BitsTransfer -BitsJob $job
         } elseif ($job.JobState -eq 'Error') {
             Write-Host "BITS job failed: $($job | Select-Object -ExpandProperty ErrorDescription)"
-            Exit 1
+            Write-Log -EventTimeStamp $logFilePath -Comment "BITS job failed: $($job | Select-Object -ExpandProperty ErrorDescription)"
         }
 
         # Check if the ISO exists
@@ -171,15 +177,25 @@ foreach ($bitsJob in $bitsJobs) {
         if ($isoExists) {
             Write-Output "ISO exists: $isoFileName"
         } else {
-            Write-Output "ISO not found, repeating BITS job..."
+            $retryCount++
+            Write-Output "ISO not found, repeating BITS job... Attempt $retryCount of $maxRetries"
+            Write-Log -EventTimeStamp $logFilePath -Comment "ISO not found: $isoFileName, Attempt $retryCount of $maxRetries"
         }
-    } while (-not $isoExists)
+    }
 
-    # Create a virtual machine using the downloaded ISO
-    Create-VM -vmName $vmName -isoPath $destinationPath
-    $Comment = $vmName + " created"
-    Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+    if (-not $isoExists) {
+        Write-Host "Failed to download $isoFileName after $maxRetries attempts. Please download manually."
+        Write-Log -EventTimeStamp $logFilePath -Comment "Failed to download $isoFileName after $maxRetries attempts. Please download manually."
+        Add-Content -Path $failedLogFilePath -Value "$isoFileName`n"
+    }
+
+        # Create a virtual machine using the downloaded ISO
+        Create-VM -vmName $vmName -isoPath $destinationPath
+        $Comment = $vmName + " created"
+        Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 }
+
+# Script completion message
 
 Write-Output "All BITS jobs completed, ISOs validated, and VMs created."
 $Comment = "All BITS jobs completed, ISOs validated, and VMs created."
