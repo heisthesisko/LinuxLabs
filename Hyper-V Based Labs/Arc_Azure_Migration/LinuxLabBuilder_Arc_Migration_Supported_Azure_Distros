@@ -1,0 +1,171 @@
+# Define variables
+$folderPath = "C:\\LinuxLab"
+$logFilePath = "C:\\LinuxLab\\LinuxLabBuilder.txt"
+$VHDPath = "C:\\LinuxLab\\VMFiles\\"
+$isoFolder = "C:\\LinuxLab\\"
+
+function Write-Log {
+    param (
+        [string]$EventTimeStamp,
+        [string]$Comment
+    )
+    
+    # Get the current date and time
+    $currentDateTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fffffff"
+    
+    # Format the log entry
+    $logEntry = "$currentDateTime - $Comment"
+    
+    # Write the log entry to the log file
+    Add-Content -Path $EventTimeStamp -Value $logEntry
+    
+    # Ensure the log file is updated immediately
+    [System.IO.File]::WriteAllText($EventTimeStamp, [System.IO.File]::ReadAllText($EventTimeStamp) + "`r`n")
+}
+
+# Example usage
+$Comment = "Script started"
+Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+
+# Check if the script is running with elevated privileges
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Please run this script as an administrator."
+    Exit 1
+}
+
+$Comment = "Is Hyper-V installed and running?"
+Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+
+# Check if Hyper-V is installed and running
+$hypervFeature = Get-WindowsFeature -Name Hyper-V
+
+if ($hypervFeature.Installed -eq $false) {
+    Write-Host "Hyper-V is not installed. Installing Hyper-V..."
+    Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart
+} elseif ($hypervFeature.State -ne 'Running') {
+    Write-Host "Hyper-V is installed but not running. Starting Hyper-V..."
+    Start-Service -Name vmms
+}
+
+# Verify the existence of the LinuxLab folder and the LinuxLabBuilder.txt file
+if (-Not (Test-Path $folderPath)) {
+    Write-Host "LinuxLab folder does not exist. Creating the folder..."
+    New-Item -Path $folderPath -ItemType Directory
+}
+
+if (-Not (Test-Path $filePath)) {
+    Write-Host "LinuxLabBuilder.txt file does not exist. Creating the file..."
+    New-Item -Path $filePath -ItemType File
+}
+
+if (-Not (Test-Path $VHDPath)) {    # Check if the VMFiles folder exists
+    Write-Host "VMFiles folder does not exist. Creating the folder..."
+    New-Item -Path $VHDPath -ItemType Directory    <# Action to perform if the condition is true #>
+}
+
+
+# Function to check if ISO exists
+function Check-ISOExists {
+    param (
+        [string]$folder,
+        [string]$fileName
+    )
+
+    $filePath = Join-Path -Path $folder -ChildPath $fileName
+    return Test-Path -Path $filePath
+}
+
+# Function to start BITS job
+function Start-BITSJob {
+    param (
+        [string]$jobName,
+        [string]$sourceUrl,
+        [string]$destinationPath
+    )
+
+    Write-Output "Starting BITS job: $jobName"
+    Start-BitsTransfer -Source $sourceUrl -Destination $destinationPath -DisplayName $jobName -Asynchronous
+}
+
+# Function to create a virtual machine
+function Create-VM {
+    param (
+        [string]$vmName,
+        [string]$isoPath
+    )
+
+    Write-Output "Creating VM: $vmName"
+
+    New-VM -Name $vmName -MemoryStartupBytes 2GB -Generation 1 -NewVHDPath "C:\LinuxLab\VMFiles\$vmName.vhdx" -NewVHDSizeBytes 60GB
+    Set-VMProcessor -VMName $vmName -Count 2
+    Add-VMDvdDrive -VMName $vmName -Path $isoPath
+    Set-VMDvdDrive -VMName $vmName -ControllerNumber 0 -ControllerLocation 1
+    Start-VM -Name $vmName
+
+    Write-Output "VM $vmName created and started."
+}
+
+# BITS job details
+$bitsJobs = @(
+    @{ JobName = "Job1"; SourceUrl = "https://mirrors.ocf.berkeley.edu/centos-stream/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-latest-x86_64-dvd1.iso"; DestinationPath = "C:\\LinuxLab\\CentOS-Stream-9.iso" },
+    @{ JobName = "Job2"; SourceUrl = "https://mirrors.ocf.berkeley.edu/ubuntu-releases/24.04/ubuntu-24.04-live-server-amd64.iso"; DestinationPath = "C:\\LinuxLab\\Ubuntu-24.iso" },
+    @{ JobName = "Job3"; SourceUrl = "https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.4-x86_64-minimal.iso"; DestinationPath = "C:\\LinuxLab\\Rocky-9.iso" },
+    @{ JobName = "Job4"; SourceUrl = "https://download.opensuse.org/distribution/leap/15.6/iso/openSUSE-Leap-15.6-NET-x86_64-Media.iso"; DestinationPath = "C:\\LinuxLab\\Suse-15.iso" },
+    @{ JobName = "Job5"; SourceUrl = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.6.0-amd64-netinst.iso"; DestinationPath = "C:\\LinuxLab\\Debian-12.iso" },
+    @{ JobName = "Job6"; SourceUrl = "https://repo.almalinux.org/almalinux/9/isos/aarch64/AlmaLinux-9-latest-aarch64-minimal.iso"; DestinationPath = "C:\\LinuxLab\\AlmaLinux-9.iso" },
+    @{ JobName = "Job7"; SourceUrl = "https://download.fedoraproject.org/pub/fedora/linux/releases/40/Server/x86_64/iso/Fedora-Server-netinst-x86_64-40-1.14.iso"; DestinationPath = "C:\\LinuxLab\\Fedora-40.iso" },
+    @{ JobName = "Job8"; SourceUrl = "https://vault.centos.org/7.7.1908/isos/x86_64/CentOS-7-x86_64-Everything-1908.iso"; DestinationPath = "C:\\LinuxLab\\CentOS-7-EOL.iso" }
+    
+
+    
+    # Add more jobs as needed
+)
+
+# Main routine
+foreach ($bitsJob in $bitsJobs) {
+    $jobName = $bitsJob.JobName
+    $sourceUrl = $bitsJob.SourceUrl
+    $destinationPath = $bitsJob.DestinationPath
+    $isoFileName = [System.IO.Path]::GetFileName($destinationPath)
+    $vmName = "LinuxLabVM-" + [System.IO.Path]::GetFileNameWithoutExtension($isoFileName)
+
+    do {
+        # Start the BITS job
+        Start-BITSJob -jobName $jobName -sourceUrl $sourceUrl -destinationPath $destinationPath
+        $Comment = "Staring $sourceUrl download"
+        Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+        # Wait for the BITS job to complete
+        $job = Get-BitsTransfer -Name $jobName
+        while ($job.JobState -ne 'Transferred' -and $job.JobState -ne 'Suspended' -and $job.JobState -ne 'Error') {
+            Start-Sleep -Seconds 5
+            $job = Get-BitsTransfer -Name $jobName
+        }
+
+        if ($job.JobState -eq 'Transferred') {
+            Complete-BitsTransfer -BitsJob $job
+        } elseif ($job.JobState -eq 'Error') {
+            Write-Host "BITS job failed: $($job | Select-Object -ExpandProperty ErrorDescription)"
+            Exit 1
+        }
+
+        # Check if the ISO exists
+        $isoExists = Check-ISOExists -folder $isoFolder -fileName $isoFileName
+        if ($isoExists) {
+            Write-Output "ISO exists: $isoFileName"
+        } else {
+            Write-Output "ISO not found, repeating BITS job..."
+        }
+    } while (-not $isoExists)
+
+    # Create a virtual machine using the downloaded ISO
+    Create-VM -vmName $vmName -isoPath $destinationPath
+    $Comment = $vmName + " created"
+    Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+}
+
+Write-Output "All BITS jobs completed, ISOs validated, and VMs created."
+$Comment = "All BITS jobs completed, ISOs validated, and VMs created."
+Write-Log -EventTimeStamp $logFilePath -Comment $Comment
+
+$Comment = "Script has completed"
+Write-Log -EventTimeStamp $logFilePath -Comment $Comment
