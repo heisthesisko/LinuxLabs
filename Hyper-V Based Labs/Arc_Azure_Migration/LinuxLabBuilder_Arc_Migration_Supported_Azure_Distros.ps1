@@ -1,3 +1,4 @@
+
 # Define variables
 $folderPath = "C:\\LinuxLab"
 $logFilePath = "C:\\LinuxLab\\LinuxLabBuilder.txt"
@@ -21,6 +22,23 @@ function Write-Log {
     
     # Ensure the log file is updated immediately
     [System.IO.File]::WriteAllText($EventTimeStamp, [System.IO.File]::ReadAllText($EventTimeStamp) + "`r`n")
+}
+
+# Verify the existence of the LinuxLab folder and the LinuxLabBuilder.txt file
+
+if (-Not (Test-Path $folderPath)) {
+    Write-Host "LinuxLab folder does not exist. Creating the folder..."
+    New-Item -Path $folderPath -ItemType Directory
+}
+
+if (-Not (Test-Path $logfilePath)) {
+    Write-Host "LinuxLabBuilder.txt file does not exist. Creating the file..."
+    New-Item -Path $filePath -ItemType File
+}
+
+if (-Not (Test-Path $VHDPath)) {    # Check if the VMFiles folder exists
+    Write-Host "VMFiles folder does not exist. Creating the folder..."
+    New-Item -Path $VHDPath -ItemType Directory    <# Action to perform if the condition is true #>
 }
 
 # Example usage
@@ -62,21 +80,7 @@ if (Check-HyperV) {
     Install-HyperV
 }
 
-# Verify the existence of the LinuxLab folder and the LinuxLabBuilder.txt file
-if (-Not (Test-Path $folderPath)) {
-    Write-Host "LinuxLab folder does not exist. Creating the folder..."
-    New-Item -Path $folderPath -ItemType Directory
-}
 
-if (-Not (Test-Path $filePath)) {
-    Write-Host "LinuxLabBuilder.txt file does not exist. Creating the file..."
-    New-Item -Path $filePath -ItemType File
-}
-
-if (-Not (Test-Path $VHDPath)) {    # Check if the VMFiles folder exists
-    Write-Host "VMFiles folder does not exist. Creating the folder..."
-    New-Item -Path $VHDPath -ItemType Directory    <# Action to perform if the condition is true #>
-}
 
 
 # Function to check if ISO exists
