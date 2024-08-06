@@ -31,7 +31,7 @@ if (-Not (Test-Path $folderPath)) {
     New-Item -Path $folderPath -ItemType Directory
 }
 
-if (-Not (Test-Path $logfilePath)) {
+if (-Not (Test-Path $logFilePath)) {
     Write-Host "LinuxLabBuilder.txt file does not exist. Creating the file..."
     New-Item -Path $filePath -ItemType File
 }
