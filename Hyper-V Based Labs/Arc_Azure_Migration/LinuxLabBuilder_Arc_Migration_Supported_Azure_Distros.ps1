@@ -54,7 +54,7 @@ Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 $featureName = "Microsoft-Hyper-V-All"
 
 # Function to check if Hyper-V is installed
-function Check-HyperV {
+function Confirm-HyperV {
     $feature = Get-WindowsOptionalFeature -Online -FeatureName $featureName
     return $feature.State -eq "Enabled"
 }
@@ -68,7 +68,7 @@ function Install-HyperV {
 }
 
 # Check if Hyper-V is installed
-if (Check-HyperV) {
+if (Confirm-HyperV) {
     Write-Host "Hyper-V is already installed."
     $Comment= "Hyper-V is already installed"
     Write-Log -EventTimeStamp $logFilePath -Comment $Comment
@@ -83,7 +83,7 @@ if (Check-HyperV) {
 
 
 # Function to check if ISO exists
-function Check-ISOExists {
+function Confirm-ISOExists {
     param (
         [string]$folder,
         [string]$fileName
@@ -173,7 +173,7 @@ foreach ($bitsJob in $bitsJobs) {
         }
 
         # Check if the ISO exists
-        $isoExists = Check-ISOExists -folder $isoFolder -fileName $isoFileName
+        $isoExists = Confirm-ISOExists -folder $isoFolder -fileName $isoFileName
         if ($isoExists) {
             Write-Output "ISO exists: $isoFileName"
         } else {
@@ -204,7 +204,27 @@ Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 
 # CentOS 7 EOL VM setup
 $vmName = "LinuxLabVM-CentOS-7-EOL"
+$ksURL = "https://github.com/heisthesisko/LinuxLabs/blob/main/Hyper-V%20Based%20Labs/PostConfigurations/ks.cfg"
 
+# Connect to VM console to send keystrokes (requires vmconnect.exe)
+$vmConnectPath = "C:\Windows\System32\vmconnect.exe"
+$vmHost = "localhost"
+
+# Start VMConnect in the background to send keystrokes
+Start-Process $vmConnectPath -ArgumentList "$vmHost", "$vmName" -NoNewWindow
+
+# Sleep to allow VMConnect to establish connection
+Start-Sleep -Seconds 10
+
+# Send keystrokes to boot with kickstart file
+$wsh = New-Object -ComObject WScript.Shell
+$wsh.AppActivate($vmName)
+Start-Sleep -Seconds 1
+$wsh.SendKeys('^]')
+Start-Sleep -Seconds 1
+$wsh.SendKeys('linux ks=' + $ksURL + '{ENTER}')
+
+# The VM will now start the installation using the kickstart file
 # AlmaLinux 9 VM setup
 $vmName = "LinuxLabVM-AlmaLinux-9"
 
