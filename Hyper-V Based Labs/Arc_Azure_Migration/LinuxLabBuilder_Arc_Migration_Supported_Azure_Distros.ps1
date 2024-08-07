@@ -195,11 +195,38 @@ foreach ($bitsJob in $bitsJobs) {
         Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 }
 
-# Script completion message
-
+# VM creation complete
 Write-Output "All BITS jobs completed, ISOs validated, and VMs created."
 $Comment = "All BITS jobs completed, ISOs validated, and VMs created."
 Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 
+#Post installation setup of VM's
+
+# CentOS 7 EOL VM setup
+$vmName = "LinuxLabVM-CentOS-7-EOL"
+
+# AlmaLinux 9 VM setup
+$vmName = "LinuxLabVM-AlmaLinux-9"
+
+# Fedora 40 VM setup
+$vmName = "LinuxLabVM-Fedora-40"
+
+# Debian 12 VM setup
+$vmName = "LinuxLabVM-Debian-12"
+
+# Suse 15 VM setup
+$vmName = "LinuxLabVM-Suse-15"
+
+# Rocky 9 VM setup
+$vmName = "LinuxLabVM-Rocky-9"
+
+# Ubuntu 24 VM setup
+$vmName = "LinuxLabVM-Ubuntu-24"
+
+# CentOS Stream 9 VM setup
+$vmName = "LinuxLabVM-CentOS-Stream-9"
+
+
+# Script completion message
 $Comment = "Script has completed"
 Write-Log -EventTimeStamp $logFilePath -Comment $Comment
