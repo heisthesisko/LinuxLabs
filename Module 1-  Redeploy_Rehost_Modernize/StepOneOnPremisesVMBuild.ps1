@@ -196,31 +196,32 @@ Write-Output "All BITS jobs completed, ISOs validated, and VMs created."
 $Comment = "All BITS jobs completed, ISOs validated, and VMs created."
 Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 
-#Post installation setup of VM's
+#Post installation setup of VM's, For Future Use to help automate the VM setup, for this lab we will manually complete the setup
 
 # CentOS 7 EOL VM setup
-$vmName = "LinuxLabVM-CentOS-7-EOL"
-$ksURL = "https://github.com/heisthesisko/LinuxLabs/blob/main/Hyper-V%20Based%20Labs/PostConfigurations/ks.cfg"
+#$vmName = "LinuxLabVM-CentOS-7-EOL"
+#$ksURL = "https://github.com/heisthesisko/LinuxLabs/blob/main/Hyper-V%20Based%20Labs/PostConfigurations/ks.cfg"
 
 # Connect to VM console to send keystrokes (requires vmconnect.exe)
-$vmConnectPath = "C:\Windows\System32\vmconnect.exe"
-$vmHost = "localhost"
+#$vmConnectPath = "C:\Windows\System32\vmconnect.exe"
+#$vmHost = "localhost"
 
 # Start VMConnect in the background to send keystrokes
-Start-Process $vmConnectPath -ArgumentList "$vmHost", "$vmName" -NoNewWindow
+#Start-Process $vmConnectPath -ArgumentList "$vmHost", "$vmName" -NoNewWindow
 
 # Sleep to allow VMConnect to establish connection
-Start-Sleep -Seconds 10
+#Start-Sleep -Seconds 10
 
 # Send keystrokes to boot with kickstart file
-$wsh = New-Object -ComObject WScript.Shell
-$wsh.AppActivate($vmName)
-Start-Sleep -Seconds 1
-$wsh.SendKeys('^]')
-Start-Sleep -Seconds 1
-$wsh.SendKeys('linux ks=' + $ksURL + '{ENTER}')
+#$wsh = New-Object -ComObject WScript.Shell
+#$wsh.AppActivate($vmName)
+#Start-Sleep -Seconds 1
+#$wsh.SendKeys('^]')
+#Start-Sleep -Seconds 1
+#$wsh.SendKeys('linux ks=' + $ksURL + '{ENTER}')
 
-# For Future Use to help automate the VM setup, for this lab we will manually complete the setup
+
+
 # The VM will now start the installation using the kickstart file
 # AlmaLinux 9 VM setup
 #$vmName = "LinuxLabVM-AlmaLinux-9"
