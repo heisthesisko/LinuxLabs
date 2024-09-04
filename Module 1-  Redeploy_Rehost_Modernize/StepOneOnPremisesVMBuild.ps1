@@ -107,7 +107,7 @@ function Start-BITSJob {
 }
 
 # Function to create a virtual machine
-function Onpremises-VM {
+function Create-VM {
     param (
         [string]$vmName,
         [string]$isoPath
