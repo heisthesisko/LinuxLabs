@@ -107,7 +107,7 @@ function Start-BITSJob {
 }
 
 # Function to create a virtual machine
-function New-VM {
+function Onpremises-VM {
     param (
         [string]$vmName,
         [string]$isoPath
@@ -186,7 +186,7 @@ foreach ($bitsJob in $bitsJobs) {
     }
 
         # Create a virtual machine using the downloaded ISO
-        New-VM -vmName $vmName -isoPath $destinationPath
+        Onpremises-VM -vmName $vmName -isoPath $destinationPath
         $Comment = $vmName + " created"
         Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 }
