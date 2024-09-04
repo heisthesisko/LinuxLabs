@@ -203,48 +203,48 @@ Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 #Post installation setup of VM's
 
 # CentOS 7 EOL VM setup
-$vmName = "LinuxLabVM-CentOS-7-EOL"
-$ksURL = "https://github.com/heisthesisko/LinuxLabs/blob/main/Hyper-V%20Based%20Labs/PostConfigurations/ks.cfg"
+#$vmName = "LinuxLabVM-CentOS-7-EOL"
+#$ksURL = "https://github.com/heisthesisko/LinuxLabs/blob/main/Hyper-V%20Based%20Labs/PostConfigurations/ks.cfg"
 
 # Connect to VM console to send keystrokes (requires vmconnect.exe)
-$vmConnectPath = "C:\Windows\System32\vmconnect.exe"
-$vmHost = "localhost"
+#$vmConnectPath = "C:\Windows\System32\vmconnect.exe"
+#$vmHost = "localhost"
 
 # Start VMConnect in the background to send keystrokes
-Start-Process $vmConnectPath -ArgumentList "$vmHost", "$vmName" -NoNewWindow
+#Start-Process $vmConnectPath -ArgumentList "$vmHost", "$vmName" -NoNewWindow
 
 # Sleep to allow VMConnect to establish connection
-Start-Sleep -Seconds 10
+#Start-Sleep -Seconds 10
 
 # Send keystrokes to boot with kickstart file
-$wsh = New-Object -ComObject WScript.Shell
-$wsh.AppActivate($vmName)
-Start-Sleep -Seconds 1
-$wsh.SendKeys('^]')
-Start-Sleep -Seconds 1
-$wsh.SendKeys('linux ks=' + $ksURL + '{ENTER}')
+#$wsh = New-Object -ComObject WScript.Shell
+#$wsh.AppActivate($vmName)
+##Start-Sleep -Seconds 1
+#$wsh.SendKeys('^]')
+#Start-Sleep -Seconds 1
+#$wsh.SendKeys('linux ks=' + $ksURL + '{ENTER}')
 
 # The VM will now start the installation using the kickstart file
 # AlmaLinux 9 VM setup
-$vmName = "LinuxLabVM-AlmaLinux-9"
+#$vmName = "LinuxLabVM-AlmaLinux-9"
 
 # Fedora 40 VM setup
-$vmName = "LinuxLabVM-Fedora-40"
+#$vmName = "LinuxLabVM-Fedora-40"
 
 # Debian 12 VM setup
-$vmName = "LinuxLabVM-Debian-12"
+#$vmName = "LinuxLabVM-Debian-12"
 
 # Suse 15 VM setup
-$vmName = "LinuxLabVM-Suse-15"
+#$vmName = "LinuxLabVM-Suse-15"
 
 # Rocky 9 VM setup
-$vmName = "LinuxLabVM-Rocky-9"
+#$vmName = "LinuxLabVM-Rocky-9"
 
 # Ubuntu 24 VM setup
-$vmName = "LinuxLabVM-Ubuntu-24"
+#$vmName = "LinuxLabVM-Ubuntu-24"
 
 # CentOS Stream 9 VM setup
-$vmName = "LinuxLabVM-CentOS-Stream-9"
+#$vmName = "LinuxLabVM-CentOS-Stream-9"
 
 
 # Script completion message
