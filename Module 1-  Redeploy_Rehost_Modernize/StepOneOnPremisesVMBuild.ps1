@@ -115,7 +115,7 @@ function Onpremises-VM {
 
     Write-Output "Creating VM: $vmName"
 
-    New-VM -Name $vmName -MemoryStartupBytes 512MB -Generation 1 -NewVHDPath "C:\LinuxLab\VMFiles\$vmName.vhdx" -NewVHDSizeBytes 60GB
+    Create-VM -Name $vmName -MemoryStartupBytes 1GB -Generation 1 -NewVHDPath "C:\LinuxLab\VMFiles\$vmName.vhdx" -NewVHDSizeBytes 60GB
     Set-VMProcessor -VMName $vmName -Count 2
     Add-VMDvdDrive -VMName $vmName -Path $isoPath
     Set-VMDvdDrive -VMName $vmName -ControllerNumber 0 -ControllerLocation 1
@@ -186,7 +186,7 @@ foreach ($bitsJob in $bitsJobs) {
     }
 
         # Create a virtual machine using the downloaded ISO
-        Onpremises-VM -vmName $vmName -isoPath $destinationPath
+        Create-VM -vmName $vmName -isoPath $destinationPath
         $Comment = $vmName + " created"
         Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 }
