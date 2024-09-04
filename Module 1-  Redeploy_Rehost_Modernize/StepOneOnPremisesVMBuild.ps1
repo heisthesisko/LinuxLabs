@@ -115,7 +115,7 @@ function Create-VM {
 
     Write-Output "Creating VM: $vmName"
 
-    Create-VM -Name $vmName -MemoryStartupBytes 2GB -Generation 1 -NewVHDPath "C:\LinuxLab\VMFiles\$vmName.vhdx" -NewVHDSizeBytes 60GB
+    New-VM -Name $vmName -MemoryStartupBytes 2GB -Generation 1 -NewVHDPath "C:\LinuxLab\VMFiles\$vmName.vhdx" -NewVHDSizeBytes 60GB
     Set-VMProcessor -VMName $vmName -Count 2
     Add-VMDvdDrive -VMName $vmName -Path $isoPath
     Set-VMDvdDrive -VMName $vmName -ControllerNumber 0 -ControllerLocation 1
