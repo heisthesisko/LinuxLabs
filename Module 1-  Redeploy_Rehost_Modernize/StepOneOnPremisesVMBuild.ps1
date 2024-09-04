@@ -186,7 +186,7 @@ foreach ($bitsJob in $bitsJobs) {
     }
 
         # Create a virtual machine using the downloaded ISO
-        Create-VM -vmName $vmName -isoPath $destinationPath
+        New-VM -vmName $vmName -isoPath $destinationPath
         $Comment = $vmName + " created"
         Write-Log -EventTimeStamp $logFilePath -Comment $Comment
 }
