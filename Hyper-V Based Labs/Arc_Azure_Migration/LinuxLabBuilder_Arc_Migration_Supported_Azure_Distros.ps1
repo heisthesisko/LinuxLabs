@@ -126,7 +126,7 @@ function Create-VM {
 
 # BITS job details
 $bitsJobs = @(
-    @{ JobName = "Job1"; SourceUrl = "https://mirrors.ocf.berkeley.edu/centos-stream/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-latest-x86_64-dvd1.iso"; DestinationPath = "C:\\LinuxLab\\CentOS-Stream-9.iso" },
+    @{ JobName = "Job1"; SourceUrl = "https://mirror.stream.centos.org/10-stream/BaseOS/x86_64/iso/CentOS-Stream-10-20250818.0-x86_64-boot.iso"; DestinationPath = "C:\\LinuxLab\\CentOS-Stream-9.iso" },
     @{ JobName = "Job2"; SourceUrl = "https://releases.ubuntu.com/18.04/ubuntu-18.04.6-live-server-amd64.iso"; DestinationPath = "C:\\LinuxLab\\Ubuntu-18.iso" },
     @{ JobName = "Job3"; SourceUrl = "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.0-x86_64-boot.iso"; DestinationPath = "C:\\LinuxLab\\Rocky-9.iso" },
     @{ JobName = "Job4"; SourceUrl = "https://download.opensuse.org/distribution/leap/15.6/iso/openSUSE-Leap-15.6-NET-x86_64-Media.iso"; DestinationPath = "C:\\LinuxLab\\Suse-15.iso" },
