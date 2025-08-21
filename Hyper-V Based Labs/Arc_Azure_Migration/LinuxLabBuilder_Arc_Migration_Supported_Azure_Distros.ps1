@@ -130,8 +130,8 @@ $bitsJobs = @(
     @{ JobName = "Job2"; SourceUrl = "https://releases.ubuntu.com/18.04/ubuntu-18.04.6-live-server-amd64.iso"; DestinationPath = "C:\\LinuxLab\\Ubuntu-18.iso" },
     @{ JobName = "Job3"; SourceUrl = "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.0-x86_64-boot.iso"; DestinationPath = "C:\\LinuxLab\\Rocky-9.iso" },
     @{ JobName = "Job4"; SourceUrl = "https://download.opensuse.org/distribution/leap/15.6/iso/openSUSE-Leap-15.6-NET-x86_64-Media.iso"; DestinationPath = "C:\\LinuxLab\\Suse-15.iso" },
-    @{ JobName = "Job5"; SourceUrl = "https://repo.almalinux.org/almalinux/9/isos/aarch64/AlmaLinux-9-latest-aarch64-minimal.iso"; DestinationPath = "C:\\LinuxLab\\AlmaLinux-9.iso" },
-    @{ JobName = "Job6"; SourceUrl = "https://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/iso/Fedora-Server-dvd-x86_64-42-1.1.iso"; DestinationPath = "C:\\LinuxLab\\Fedora-40.iso" },
+    @{ JobName = "Job5"; SourceUrl = "https://repo.almalinux.org/almalinux/10/isos/x86_64/AlmaLinux-10.0-x86_64-boot.iso"; DestinationPath = "C:\\LinuxLab\\AlmaLinux-9.iso" },
+    @{ JobName = "Job6"; SourceUrl = "https://repo.almalinux.org/almalinux/10/isos/x86_64/AlmaLinux-10.0-x86_64-boot.iso"; DestinationPath = "C:\\LinuxLab\\Fedora-40.iso" },
     @{ JobName = "Job7"; SourceUrl = "https://vault.centos.org/7.7.1908/isos/x86_64/CentOS-7-x86_64-Everything-1908.iso"; DestinationPath = "C:\\LinuxLab\\CentOS-7-EOL.iso" }
     
 
